@@ -9,6 +9,8 @@ import Messages from './pages/Messages'
 import Profile from './pages/Profile'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import { supabase } from './services/supabaseClient'
+
 
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth()
@@ -17,6 +19,7 @@ function PrivateRoute({ children }) {
 }
 
 export default function App() {
+    console.log(supabase)
   return (
     <div className="min-h-screen">
       <Navbar />

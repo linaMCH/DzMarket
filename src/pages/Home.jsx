@@ -7,7 +7,10 @@ import CategoryFilter from '../components/CategoryFilter'
 import EmptyState from '../components/EmptyState'
 
 export default function Home() {
-  const { data: products = [] } = useQuery(['products'], getProducts)
+  const { data: products = [] } = useQuery({
+    queryKey: ['products'],
+    queryFn: getProducts
+  })
   const [category, setCategory] = useState(null)
   const [q, setQ] = useState('')
 
