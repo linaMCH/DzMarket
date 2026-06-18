@@ -22,7 +22,7 @@ export default function Register() {
         <input value={name} onChange={e => setName(e.target.value)} placeholder="Nom" className="w-full border px-3 py-2 rounded-md" required />
         <input value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" className="w-full border px-3 py-2 rounded-md" required />
         <input value={password} onChange={e => setPassword(e.target.value)} type="password" placeholder="Mot de passe" className="w-full border px-3 py-2 rounded-md" required />
-        <button className="w-full bg-indigo-600 text-white py-2 rounded-md">S'inscrire</button>
+        <button className="w-full bg-brand-700 text-white py-2 rounded-md">S'inscrire</button>
       </form>
     </div>
   )

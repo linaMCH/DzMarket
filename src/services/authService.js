@@ -1,24 +1,41 @@
-import { users } from '../utils/mockData'
-
-// Auth service stubs. Replace TODOs with Supabase auth calls.
+import { supabase } from './supabaseClient'
 
 export async function login(email, password) {
-  // TODO: Replace with `supabase.auth.signInWithPassword({ email, password })`
-  // For now return first user as mock
-  return Promise.resolve(users[0])
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+  if (error) throw error
+  return data.user
 }
 
-export async function register(payload) {
-  // TODO: Replace with `supabase.auth.signUp({ email, password })` and user insert
-  return Promise.resolve({ id: 'u_new', name: payload.name || payload.email })
+export async function register({ name, email, password }) {
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: { name }
+    }
+  })
+  if (error) throw error
+  return data.user
 }
 
 export async function logout() {
-  // TODO: Replace with `supabase.auth.signOut()`
-  return Promise.resolve()
+  const { error } = await supabase.auth.signOut()
+  if (error) throw error
 }
 
 export async function getCurrentUser() {
-  // TODO: Replace with `supabase.auth.getUser()` and profile fetch
-  return Promise.resolve(null)
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return null
+
+  const { data: profile, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single()
+
+  if (error) throw error
+  // map Supabase `avatar_url` to UI `avatar`
+  if (profile) return { ...profile, avatar: profile.avatar_url }
+  // If no profile row exists yet, return a minimal user object so UI knows user is authenticated
+  return { id: user.id, email: user.email, name: null, avatar: null }
 }

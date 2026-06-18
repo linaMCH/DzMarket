@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useState, useEffect } from 'react'
+import { supabase } from '../services/supabaseClient'
 import * as authService from '../services/authService'
 
 const AuthContext = createContext()
@@ -8,35 +9,36 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    let mounted = true
-    authService.getCurrentUser().then(u => {
-      if (mounted) setUser(u)
-      setLoading(false)
+    authService.getCurrentUser()
+      .then(setUser)
+      .finally(() => setLoading(false))
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        authService.getCurrentUser().then(setUser)
+      } else {
+        setUser(null)
+      }
     })
-    return () => (mounted = false)
+
+    return () => listener.subscription.unsubscribe()
   }, [])
 
-  const login = async (email, password) => {
-    setLoading(true)
-    const u = await authService.login(email, password)
-    setUser(u)
-    setLoading(false)
-    return u
+  async function login(email, password) {
+    await authService.login(email, password)
+    const profile = await authService.getCurrentUser()
+    setUser(profile)
   }
 
-  const register = async (payload) => {
-    setLoading(true)
-    const u = await authService.register(payload)
-    setUser(u)
-    setLoading(false)
-    return u
+  async function register(payload) {
+    await authService.register(payload)
+    const profile = await authService.getCurrentUser()
+    setUser(profile)
   }
 
-  const logout = async () => {
-    setLoading(true)
+  async function logout() {
     await authService.logout()
     setUser(null)
-    setLoading(false)
   }
 
   return (

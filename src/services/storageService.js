@@ -1,12 +1,17 @@
-// Storage service stubs. Replace TODOs with Supabase storage APIs.
+import { supabase } from './supabaseClient'
 
 export async function uploadImage(file) {
-  // TODO: Use `supabase.storage.from('images').upload(path, file)` and return public URL
-  // For mock, return a placeholder URL
-  return Promise.resolve('https://via.placeholder.com/800x600?text=Uploaded')
+  // uploads file to bucket 'product-images' and returns the storage path (string)
+  const fileName = `${Date.now()}_${file.name.replace(/\s+/g, '_')}`
+  const path = `uploads/${fileName}`
+  const { data, error } = await supabase.storage.from('product-images').upload(path, file)
+  if (error) throw error
+  // Supabase returns { path } in data
+  return data?.path || path
 }
 
-export async function getPublicUrl(path) {
-  // TODO: Use `supabase.storage.from('images').getPublicUrl(path)`
-  return Promise.resolve(`https://via.placeholder.com/800x600?text=${encodeURIComponent(path)}`)
+export function getPublicUrl(path) {
+  // getPublicUrl is synchronous in Supabase JS v2
+  const { data } = supabase.storage.from('product-images').getPublicUrl(path)
+  return data?.publicUrl || null
 }

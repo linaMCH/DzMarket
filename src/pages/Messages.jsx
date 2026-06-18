@@ -1,20 +1,32 @@
 import React, { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { useSearchParams } from 'react-router-dom'
 import { getConversations, getMessages, sendMessage } from '../services/messageService'
-import { users } from '../utils/mockData'
 import ChatBubble from '../components/ChatBubble'
 import { useAuth } from '../context/AuthContext'
 
 export default function Messages() {
   const { user } = useAuth()
+  const [searchParams] = useSearchParams()
+  const conversationFromUrl = searchParams.get('conversation')
+
   const { data: convs = [] } = useQuery({
     queryKey: ['conversations', user?.id],
     queryFn: () => getConversations(user?.id),
     enabled: !!user
   })
-  const [active, setActive] = useState(convs?.[0]?.id || null)
+
+  const [active, setActive] = useState(null)
   const [messages, setMessages] = useState([])
   const [text, setText] = useState('')
+
+  useEffect(() => {
+    if (conversationFromUrl) {
+      setActive(conversationFromUrl)
+    } else if (convs.length > 0 && !active) {
+      setActive(convs[0].id)
+    }
+  }, [convs, conversationFromUrl])
 
   useEffect(() => {
     if (!active) return
@@ -34,8 +46,7 @@ export default function Messages() {
         <h3 className="font-medium mb-3">Conversations</h3>
         <div className="space-y-2">
           {convs.map(c => {
-            const otherId = c.participants.find(p => p !== user?.id) || c.participants[0]
-            const other = users.find(u => u.id === otherId)
+            const other = user?.id === c.buyerId ? c.seller : c.buyer
             return (
               <div key={c.id} onClick={() => setActive(c.id)} className={`p-2 rounded-md cursor-pointer ${active === c.id ? 'bg-slate-100' : ''}`}>
                 <div className="font-medium">{other?.name}</div>
@@ -54,7 +65,7 @@ export default function Messages() {
         </div>
         <div className="mt-3 flex items-center space-x-2">
           <input value={text} onChange={e => setText(e.target.value)} className="flex-1 border rounded-md px-3 py-2" placeholder="Écrire un message..." />
-          <button onClick={handleSend} className="bg-indigo-600 text-white px-4 py-2 rounded-md">Envoyer</button>
+          <button onClick={handleSend} className="bg-brand-700 text-white px-4 py-2 rounded-md">Envoyer</button>
         </div>
       </div>
     </div>

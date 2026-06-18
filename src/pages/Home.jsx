@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { getProducts } from '../services/productService'
-import { categories as allCategories, users as allUsers } from '../utils/mockData'
+const allCategories = ['Électronique', 'Vêtements', 'Maison', 'Sport', 'Livres']
 import ProductCard from '../components/ProductCard'
 import CategoryFilter from '../components/CategoryFilter'
 import EmptyState from '../components/EmptyState'
@@ -34,7 +34,9 @@ export default function Home() {
           <EmptyState title="Aucune annonce" description="Aucune annonce ne correspond à votre recherche." />
         ) : (
           filtered.map(p => {
-            const seller = allUsers.find(u => u.id === p.sellerId)
+            // prefer `p.seller` returned by productService; do not fallback to mock data
+            const seller = p.seller
+            console.debug('Home rendering product:', p)
             return <ProductCard key={p.id} product={p} seller={seller} />
           })
         )}

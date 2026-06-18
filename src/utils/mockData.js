@@ -19,7 +19,10 @@ const users = [
     city: 'Constantine',
     avatar: 'https://ui-avatars.com/api/?name=Youssef+K&background=6366f1&color=ffffff'
   }
-]
+    images: [
+      'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80&auto=format&fit=crop'
+    ],
 
 const categories = ['Électronique', 'Vêtements', 'Maison', 'Sport', 'Livres']
 
@@ -29,7 +32,10 @@ const products = [
     title: 'iPhone 11 en bon état',
     price: 85000,
     category: 'Électronique',
-    description: 'Couleur noire, batterie 85%, vendu avec chargeur.',
+    images: [
+      'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&q=80&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&q=80&auto=format&fit=crop'
+    ],
     images: ['https://via.placeholder.com/800x600?text=iPhone+11'],
     sellerId: 'u1',
     city: 'Alger'
@@ -39,7 +45,10 @@ const products = [
     title: 'Veste en cuir vintage',
     price: 12000,
     category: 'Vêtements',
-    description: 'Taille M, très bon état, style rétro.',
+    images: [
+      'https://images.unsplash.com/photo-1555041469-149751162957?w=800&q=80&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1555041469-149751162957?w=800&q=80&auto=format&fit=crop'
+    ],
     images: ['https://via.placeholder.com/800x600?text=Veste'],
     sellerId: 'u2',
     city: 'Oran'
@@ -49,7 +58,10 @@ const products = [
     title: 'Canapé 3 places confortable',
     price: 45000,
     category: 'Maison',
-    description: 'Tissu beige, quelques taches légères, très confortable.',
+    images: [
+      'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&q=80&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&q=80&auto=format&fit=crop'
+    ],
     images: ['https://via.placeholder.com/800x600?text=Canape'],
     sellerId: 'u3',
     city: 'Constantine'
@@ -59,7 +71,10 @@ const products = [
     title: 'Raquette de tennis Wilson',
     price: 8000,
     category: 'Sport',
-    description: 'Parfaite pour débutant, grips neufs.',
+    images: [
+      'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&q=80&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&q=80&auto=format&fit=crop'
+    ],
     images: ['https://via.placeholder.com/800x600?text=Raquette'],
     sellerId: 'u1',
     city: 'Alger'
@@ -69,7 +84,10 @@ const products = [
     title: 'Lot de 5 romans français',
     price: 2000,
     category: 'Livres',
-    description: 'Romans contemporains, bon état.',
+    images: [
+      'https://images.unsplash.com/photo-1555041469-149751162957?w=800&q=80&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1555041469-149751162957?w=800&q=80&auto=format&fit=crop'
+    ],
     images: ['https://via.placeholder.com/800x600?text=Livres'],
     sellerId: 'u2',
     city: 'Oran'
@@ -79,7 +97,10 @@ const products = [
     title: 'Table basse scandinave',
     price: 15000,
     category: 'Maison',
-    description: 'Bois clair, design épuré.',
+    images: [
+      'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80&auto=format&fit=crop'
+    ],
     images: ['https://via.placeholder.com/800x600?text=Table+Basse'],
     sellerId: 'u3',
     city: 'Constantine'
@@ -89,7 +110,10 @@ const products = [
     title: 'Ordinateur portable Lenovo',
     price: 95000,
     category: 'Électronique',
-    description: 'i5, 8GB RAM, 256GB SSD, bon état.',
+    images: [
+      'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&q=80&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&q=80&auto=format&fit=crop'
+    ],
     images: ['https://via.placeholder.com/800x600?text=Lenovo'],
     sellerId: 'u1',
     city: 'Alger'
@@ -99,7 +123,10 @@ const products = [
     title: 'Robe fleurie été',
     price: 6000,
     category: 'Vêtements',
-    description: 'Taille S, presque neuve.',
+    images: [
+      'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&q=80&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&q=80&auto=format&fit=crop'
+    ],
     images: ['https://via.placeholder.com/800x600?text=Robe'],
     sellerId: 'u2',
     city: 'Oran'
@@ -109,7 +136,10 @@ const products = [
     title: 'Kit d’haltères 10kg',
     price: 18000,
     category: 'Sport',
-    description: 'Parfait pour entraînement à domicile.',
+    images: [
+      'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&q=80&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&q=80&auto=format&fit=crop'
+    ],
     images: ['https://via.placeholder.com/800x600?text=Halt%C3%A8res'],
     sellerId: 'u3',
     city: 'Constantine'
@@ -119,7 +149,10 @@ const products = [
     title: 'Guide de voyage Algérie',
     price: 1200,
     category: 'Livres',
-    description: 'Guide récent, cartes incluses.',
+    images: [
+      'https://images.unsplash.com/photo-1555041469-149751162957?w=800&q=80&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1555041469-149751162957?w=800&q=80&auto=format&fit=crop'
+    ],
     images: ['https://via.placeholder.com/800x600?text=Guide'],
     sellerId: 'u1',
     city: 'Alger'
@@ -129,7 +162,10 @@ const products = [
     title: 'Chaise de bureau ergonomique',
     price: 22000,
     category: 'Maison',
-    description: 'Réglable, roulettes, excellent soutien.',
+    images: [
+      'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80&auto=format&fit=crop'
+    ],
     images: ['https://via.placeholder.com/800x600?text=Chaise'],
     sellerId: 'u2',
     city: 'Oran'

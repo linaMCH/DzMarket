@@ -3,7 +3,6 @@ import { useAuth } from '../context/AuthContext'
 import { useQuery } from '@tanstack/react-query'
 import { getProducts } from '../services/productService'
 import ProductCard from '../components/ProductCard'
-import { users } from '../utils/mockData'
 
 export default function Profile() {
   const { user } = useAuth()
@@ -13,7 +12,7 @@ export default function Profile() {
   })
 
   const mine = products.filter(p => p.sellerId === user?.id)
-  const profile = users.find(u => u.id === user?.id)
+  const profile = user
 
   return (
     <div className="space-y-6">

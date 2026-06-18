@@ -1,18 +1,24 @@
 import React, { useCallback, useState } from 'react'
-import { uploadImage } from '../services/storageService'
+import { uploadImage, getPublicUrl } from '../services/storageService'
 
 export default function ImageUploader({ onChange }) {
   const [previews, setPreviews] = useState([])
 
   const handleFiles = useCallback(async (files) => {
     const arr = Array.from(files)
-    const urls = await Promise.all(arr.map(async (f) => {
-      // mock upload
-      const url = await uploadImage(f)
-      return url
+    // upload files -> get storage paths
+    const paths = await Promise.all(arr.map(async (f) => {
+      const path = await uploadImage(f)
+      // log returned storage path for diagnostics
+      console.debug('ImageUploader.uploaded path:', path)
+      return path
     }))
+    // convert paths to public URLs for preview
+    const urls = paths.map(p => getPublicUrl(p))
     setPreviews(prev => [...prev, ...urls])
-    onChange && onChange(urls)
+    // onChange should receive storage paths so caller can store them in DB
+    console.debug('ImageUploader.onChange paths:', paths)
+    onChange && onChange(paths)
   }, [onChange])
 
   return (

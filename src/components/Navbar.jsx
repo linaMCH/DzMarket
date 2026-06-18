@@ -10,7 +10,7 @@ export default function Navbar() {
     <header className="bg-white border-b">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          <Link to="/" className="text-xl font-bold text-indigo-600">LeBonCoin Lite</Link>
+          <Link to="/" className="text-xl font-bold text-brand-700">LeBonCoin Lite</Link>
           <div className="hidden md:block">
             <input placeholder="Rechercher des annonces..." className="border rounded-md px-3 py-2 w-80" />
           </div>
@@ -19,7 +19,7 @@ export default function Navbar() {
         <nav className="flex items-center space-x-4">
           <Link to="/" className="text-sm text-slate-700">Accueil</Link>
           <Link to="/messages" className="text-sm text-slate-700">Messages</Link>
-          <Link to="/new-listing" className="text-sm text-indigo-600 font-medium">Publier</Link>
+          <Link to="/new-listing" className="text-sm text-brand-700 font-medium">Publier</Link>
           {user ? (
             <>
               <Link to="/profile" className="text-sm text-slate-700">Mon profil</Link>
@@ -28,7 +28,7 @@ export default function Navbar() {
           ) : (
             <>
               <Link to="/login" className="text-sm text-slate-700">Connexion</Link>
-              <Link to="/register" className="text-sm text-indigo-600 font-medium">Inscription</Link>
+              <Link to="/register" className="text-sm text-brand-700 font-medium">Inscription</Link>
             </>
           )}
         </nav>

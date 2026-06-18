@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import ImageUploader from '../components/ImageUploader'
 import { createProduct } from '../services/productService'
 import { useNavigate } from 'react-router-dom'
-import { categories } from '../utils/mockData'
+const categories = ['Électronique', 'Vêtements', 'Maison', 'Sport', 'Livres']
 import { useAuth } from '../context/AuthContext'
 
 export default function NewListing() {
@@ -19,6 +19,7 @@ export default function NewListing() {
     const payload = {
       title, description, price: Number(price), category, images, sellerId: user?.id || 'u1', city: user?.city || 'Ville'
     }
+    console.debug('NewListing.createProduct payload:', payload)
     const created = await createProduct(payload)
     // redirect to new product
     navigate(`/product/${created.id}`)
@@ -36,9 +37,9 @@ export default function NewListing() {
             {categories.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
         </div>
-        <ImageUploader onChange={(urls) => setImages(prev => [...prev, ...urls])} />
+        <ImageUploader onChange={(paths) => setImages(prev => [...prev, ...paths])} />
         <div className="pt-4">
-          <button className="bg-indigo-600 text-white px-4 py-2 rounded-md">Publier</button>
+          <button className="bg-brand-700 text-white px-4 py-2 rounded-md">Publier</button>
         </div>
       </form>
     </div>
