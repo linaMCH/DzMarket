@@ -7,7 +7,7 @@ function mapSeller(seller) {
     id: seller.id,
     name: seller.name,
     city: seller.city,
-    // map Supabase `avatar_url` to UI `avatar`
+    // mappe avatar_url → avatar pour le UI
     avatar: seller.avatar_url
   }
 }
@@ -35,14 +35,14 @@ function mapProduct(row) {
     description: row.description,
     price: row.price,
     category: row.category,
-    // images stored in DB are storage paths; convert to public URLs for the UI
+    // les chemins stockés en DB sont convertis en URLs publiques pour le UI
     images: imgs.map(p => getPublicUrl(p)),
-    // map snake_case seller_id to sellerId expected by UI
+    // mappe seller_id → sellerId
     sellerId: row.seller_id,
     city: row.city,
     isActive: row.is_active,
     createdAt: row.created_at,
-    // map nested seller object and rename avatar_url -> avatar
+    // mappe l'objet vendeur imbriqué et renomme avatar_url → avatar
     seller: mapSeller(row.seller)
   }
 }
@@ -75,6 +75,25 @@ export async function createProduct(payload) {
   const { data, error } = await supabase
     .from('products')
     .insert([{ ...rest, seller_id: sellerId }])
+    .select('*, seller:profiles(id, name, city, avatar_url)')
+    .single()
+
+  if (error) throw error
+  return mapProduct(data)
+}
+
+/**
+ * Met à jour un produit existant dans Supabase.
+ * @param {string} id - Identifiant du produit
+ * @param {Object} payload - Champs à mettre à jour : title, description, price, category, city
+ */
+export async function updateProduct(id, payload) {
+  const { title, description, price, category, city } = payload
+
+  const { data, error } = await supabase
+    .from('products')
+    .update({ title, description, price: Number(price), category, city })
+    .eq('id', id)
     .select('*, seller:profiles(id, name, city, avatar_url)')
     .single()
 

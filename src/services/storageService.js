@@ -1,14 +1,21 @@
 import { supabase } from './supabaseClient'
 
-export async function uploadImage(file) {
-  // Sanitize : supprime accents + tous caractères non alphanumériques sauf tiret et point
-  const safeName = file.name
-    .normalize('NFD')                        // décompose les accents (é → e + ́)
-    .replace(/[\u0300-\u036f]/g, '')         // supprime les diacritiques
-    .replace(/[^a-zA-Z0-9._-]/g, '_')       // remplace tout caractère spécial par _
-    .replace(/_+/g, '_')                     // évite les __ consécutifs
+/**
+ * Nettoie un nom de fichier : supprime accents et caractères spéciaux.
+ */
+function sanitizeFileName(name) {
+  return name
+    .normalize('NFD')                     // décompose les accents (é → e + ́)
+    .replace(/[\u0300-\u036f]/g, '')      // supprime les diacritiques
+    .replace(/[^a-zA-Z0-9._-]/g, '_')    // remplace tout caractère spécial par _
+    .replace(/_+/g, '_')                  // évite les __ consécutifs
     .toLowerCase()
+}
 
+// ─── Product Images ───────────────────────────────────────────────────────────
+
+export async function uploadImage(file) {
+  const safeName = sanitizeFileName(file.name)
   const fileName = `${Date.now()}_${safeName}`
   const path = `uploads/${fileName}`
 
@@ -21,7 +28,35 @@ export async function uploadImage(file) {
 }
 
 export function getPublicUrl(path) {
-  // getPublicUrl is synchronous in Supabase JS v2
+  // getPublicUrl est synchrone en Supabase JS v2
   const { data } = supabase.storage.from('product-images').getPublicUrl(path)
+  return data?.publicUrl || null
+}
+
+// ─── Avatars ──────────────────────────────────────────────────────────────────
+
+/**
+ * Upload un fichier avatar dans le bucket `avatars` (dossier `uploads/`).
+ * Retourne le chemin de stockage (ex: "uploads/1234567890_photo.jpg").
+ */
+export async function uploadAvatar(file) {
+  const safeName = sanitizeFileName(file.name)
+  const fileName = `${Date.now()}_${safeName}`
+  const path = `uploads/${fileName}`
+
+  const { data, error } = await supabase.storage
+    .from('avatars')
+    .upload(path, file, { upsert: true })
+
+  if (error) throw error
+  return data?.path || path
+}
+
+/**
+ * Récupère l'URL publique d'un avatar depuis le bucket `avatars`.
+ */
+export function getAvatarUrl(path) {
+  if (!path) return null
+  const { data } = supabase.storage.from('avatars').getPublicUrl(path)
   return data?.publicUrl || null
 }

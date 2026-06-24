@@ -1,23 +1,66 @@
 import React, { useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { useSearchParams } from 'react-router-dom'
 import { getProducts } from '../services/productService'
-const allCategories = ['Électronique', 'Vêtements', 'Maison', 'Sport', 'Livres']
 import ProductCard from '../components/ProductCard'
 import CategoryFilter from '../components/CategoryFilter'
 import EmptyState from '../components/EmptyState'
+
+const allCategories = ['Électronique', 'Vêtements', 'Maison', 'Sport', 'Livres']
+
+/**
+ * Normalise une chaîne : supprime accents et met en minuscules.
+ * Permet une recherche insensible aux accents et à la casse.
+ */
+function normalize(str) {
+  if (!str) return ''
+  return String(str)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+}
 
 export default function Home() {
   const { data: products = [] } = useQuery({
     queryKey: ['products'],
     queryFn: getProducts
   })
+
   const [category, setCategory] = useState(null)
-  const [q, setQ] = useState('')
+
+  // Synchronisation de la recherche avec le paramètre URL ?q=
+  const [searchParams, setSearchParams] = useSearchParams()
+  const q = searchParams.get('q') || ''
+
+  function handleLocalSearch(e) {
+    const value = e.target.value
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev)
+      if (value) {
+        next.set('q', value)
+      } else {
+        next.delete('q')
+      }
+      return next
+    })
+  }
 
   const filtered = useMemo(() => {
+    const nq = normalize(q)
     return products.filter(p => {
+      // Filtre catégorie
       if (category && p.category !== category) return false
-      if (q && !`${p.title} ${p.description}`.toLowerCase().includes(q.toLowerCase())) return false
+      // Filtre texte étendu : titre, description, catégorie, ville, nom vendeur
+      if (nq) {
+        const haystack = normalize([
+          p.title,
+          p.description,
+          p.category,
+          p.city,
+          p.seller?.name
+        ].join(' '))
+        if (!haystack.includes(nq)) return false
+      }
       return true
     })
   }, [products, category, q])
@@ -26,7 +69,13 @@ export default function Home() {
     <div>
       <CategoryFilter categories={allCategories} selected={category} onSelect={setCategory} />
       <div className="mt-4 flex items-center">
-        <input value={q} onChange={e => setQ(e.target.value)} placeholder="Rechercher..." className="flex-1 border rounded-md px-3 py-2" />
+        <input
+          id="home-search"
+          value={q}
+          onChange={handleLocalSearch}
+          placeholder="Rechercher..."
+          className="flex-1 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-400"
+        />
       </div>
 
       <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -34,9 +83,7 @@ export default function Home() {
           <EmptyState title="Aucune annonce" description="Aucune annonce ne correspond à votre recherche." />
         ) : (
           filtered.map(p => {
-            // prefer `p.seller` returned by productService; do not fallback to mock data
             const seller = p.seller
-            console.debug('Home rendering product:', p)
             return <ProductCard key={p.id} product={p} seller={seller} />
           })
         )}
