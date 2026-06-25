@@ -31,33 +31,11 @@ export async function getCurrentUser() {
     .from('profiles')
     .select('*')
     .eq('id', user.id)
-    .maybeSingle()          // ← était .single(), crashait si pas de row
-
-  if (error) throw error
-  if (profile) return { ...profile, avatar: profile.avatar_url }
-  return { id: user.id, email: user.email, name: null, avatar: null, city: null }
-}
-
-/**
- * Met à jour le profil de l'utilisateur connecté dans la table `profiles`.
- * @param {Object} fields - Champs à mettre à jour : { avatarPath, name, city, ... }
- */
-export async function updateProfile({ avatarPath, ...fields }) {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) throw new Error('Non authentifié')
-
-  const updates = { ...fields }
-  if (avatarPath !== undefined) {
-    updates.avatar_url = avatarPath
-  }
-
-  const { data, error } = await supabase
-    .from('profiles')
-    .update(updates)
-    .eq('id', user.id)
-    .select('*')
     .single()
 
   if (error) throw error
-  return { ...data, avatar: data.avatar_url }
+  // map Supabase `avatar_url` to UI `avatar`
+  if (profile) return { ...profile, avatar: profile.avatar_url }
+  // If no profile row exists yet, return a minimal user object so UI knows user is authenticated
+  return { id: user.id, email: user.email, name: null, avatar: null }
 }
