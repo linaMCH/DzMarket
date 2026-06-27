@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
-import { useQuery } from '@tanstack/react-query'
+// MODIFIÉ — import useQueryClient pour invalider le cache après l'upload
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { getProducts } from '../services/productService'
 import { updateProfile } from '../services/authService'
 import { uploadAvatar, getAvatarUrl } from '../services/storageService'
@@ -10,9 +11,10 @@ import ProductCard from '../components/ProductCard'
 export default function Profile() {
   const { user, refreshUser } = useAuth()
   const { showToast } = useToastContext()
+  // MODIFIÉ — queryClient nécessaire pour invalider ['products'] après l'upload
+  const queryClient = useQueryClient()
 
   const fileInputRef = useRef(null)
-  // MODIFIÉ — avatarPreview stocke une URL affichable (blob: ou URL CDN), jamais un path brut
   const [avatarPreview, setAvatarPreview] = useState(null)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
 
@@ -24,20 +26,23 @@ export default function Profile() {
   const mine = products.filter(p => p.sellerId === user?.id)
   const profile = user
 
-  // MODIFIÉ — Résolution correcte de l'URL publique au montage :
-  // profile.avatar contient le path brut depuis profiles.avatar_url
-  // → on doit toujours le passer par getAvatarUrl() pour obtenir l'URL CDN complète.
-  // Priorité : aperçu local (blob:) > URL CDN résolue > placeholder
+  // Priorité affichage : aperçu local (blob:) > URL CDN résolue > placeholder
   const resolvedAvatarUrl = profile?.avatar ? getAvatarUrl(profile.avatar) : null
   const currentAvatar = avatarPreview
     || resolvedAvatarUrl
     || `https://placehold.co/128x128/e2e8f0/94a3b8?text=${encodeURIComponent(profile?.name || 'U')}`
 
+  // MODIFIÉ — Profile seller : on construit un objet avec avatar déjà résolu en URL CDN
+  // pour que ProductCard reçoive la même structure que mapSeller() de productService
+  const profileAsSeller = profile
+    ? { ...profile, avatar: resolvedAvatarUrl || avatarPreview || null }
+    : null
+
   async function handleAvatarChange(e) {
     const file = e.target.files?.[0]
     if (!file) return
 
-    // Aperçu immédiat avant l'upload (URL objet locale)
+    // Aperçu immédiat avant l'upload
     const objectUrl = URL.createObjectURL(file)
     setAvatarPreview(objectUrl)
 
@@ -46,24 +51,27 @@ export default function Profile() {
       // 1. Upload vers le bucket avatars (path: {user.id}/{filename})
       const path = await uploadAvatar(file, user.id)
 
-      // MODIFIÉ — 2. Résolution de l'URL publique depuis le path retourné
+      // 2. Résolution de l'URL publique depuis le path retourné
       const publicUrl = getAvatarUrl(path)
 
       // 3. Persistance du path brut dans profiles.avatar_url
       await updateProfile({ avatarPath: path })
 
-      // MODIFIÉ — 4. Remplace l'aperçu blob: par l'URL CDN permanente
+      // 4. Remplace l'aperçu blob: par l'URL CDN permanente
       setAvatarPreview(publicUrl)
 
-      // 5. Recharge le contexte auth → Navbar et autres composants voient la MAJ
+      // 5. Recharge le contexte auth → Navbar et avatar principal voient la MAJ
       await refreshUser()
+
+      // MODIFIÉ — 6. Invalide le cache ['products'] pour forcer le re-fetch
+      // des annonces avec le nouvel avatar vendeur (Cause B du bug)
+      queryClient.invalidateQueries({ queryKey: ['products'] })
 
       showToast('Photo de profil mise à jour ✓', 'success')
     } catch (err) {
-      // MODIFIÉ — Message d'erreur explicite + revert visuel
       const message = err?.message || "Erreur lors de l'upload de l'avatar"
       showToast(message, 'error')
-      setAvatarPreview(null) // revert : retour à l'avatar précédent
+      setAvatarPreview(null) // revert si échec
     } finally {
       setUploadingAvatar(false)
     }
@@ -83,7 +91,6 @@ export default function Profile() {
                 alt={profile?.name || 'Avatar'}
                 className="w-24 h-24 rounded-full object-cover border-2 border-slate-200"
                 onError={(e) => {
-                  // MODIFIÉ — fallback propre si l'URL CDN est cassée
                   e.currentTarget.onerror = null
                   e.currentTarget.src = `https://placehold.co/128x128/e2e8f0/94a3b8?text=${encodeURIComponent(profile?.name || 'U')}`
                 }}
@@ -126,7 +133,8 @@ export default function Profile() {
       <div className="bg-white p-6 rounded-md shadow">
         <h3 className="font-medium mb-4">Mes annonces ({mine.length})</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {mine.map(p => <ProductCard key={p.id} product={p} seller={profile} />)}
+          {/* MODIFIÉ — seller={profileAsSeller} : avatar déjà résolu en URL CDN */}
+          {mine.map(p => <ProductCard key={p.id} product={p} seller={profileAsSeller} />)}
           {mine.length === 0 && <div className="text-sm text-slate-500">Aucune annonce active</div>}
         </div>
       </div>

@@ -9,7 +9,7 @@
 ![Vercel](https://img.shields.io/badge/Deploy-Vercel-000000?logo=vercel&logoColor=white)
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 
-> **Live demo:** _coming soon — replace with your Vercel URL_
+> **Live demo:** _coming soon 
 
 ---
 

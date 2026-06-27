@@ -1,5 +1,6 @@
 import { supabase } from './supabaseClient'
-import { getPublicUrl } from './storageService'
+// MODIFIÉ — ajout de getAvatarUrl pour résoudre les avatars dans mapSeller()
+import { getPublicUrl, getAvatarUrl } from './storageService'
 
 function mapSeller(seller) {
   if (!seller) return null
@@ -7,8 +8,9 @@ function mapSeller(seller) {
     id: seller.id,
     name: seller.name,
     city: seller.city,
-    // mappe avatar_url → avatar pour le UI
-    avatar: seller.avatar_url
+    // MODIFIÉ — avatar_url (path brut Storage) est résolu en URL CDN publique
+    // Sans getAvatarUrl(), Avatar.jsx reçoit un path relatif invalide → placeholder
+    avatar: getAvatarUrl(seller.avatar_url)
   }
 }
 
