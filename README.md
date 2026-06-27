@@ -25,9 +25,8 @@ It covers the full product loop: post an ad, upload photos, search by category a
 
 ## Demo
 
-![Demo](./public/demo.png)
+![Demo](./public/demo-ezgif.com-video-to-gif-converter.mp4)
 
-> _Replace with a real screenshot or a short GIF walkthrough once available._
 
 ---
 
