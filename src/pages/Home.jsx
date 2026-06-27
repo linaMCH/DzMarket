@@ -68,13 +68,15 @@ export default function Home() {
   return (
     <div>
       <CategoryFilter categories={allCategories} selected={category} onSelect={setCategory} />
+
+      {/* MODIFIÉ — Style de la barre de recherche renforcé (seule barre du site) */}
       <div className="mt-4 flex items-center">
         <input
           id="home-search"
           value={q}
           onChange={handleLocalSearch}
-          placeholder="Rechercher..."
-          className="flex-1 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-400"
+          placeholder="🔍  Rechercher une annonce, une catégorie, une ville..."
+          className="flex-1 border border-slate-300 rounded-lg px-4 py-3 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-400 transition"
         />
       </div>
 

@@ -36,13 +36,17 @@ export function getPublicUrl(path) {
 // ─── Avatars ──────────────────────────────────────────────────────────────────
 
 /**
- * Upload un fichier avatar dans le bucket `avatars` (dossier `uploads/`).
- * Retourne le chemin de stockage (ex: "uploads/1234567890_photo.jpg").
+ * Upload un fichier avatar dans le bucket `avatars`.
+ * Le path est `{user.id}/{filename}` pour correspondre à la RLS :
+ * "(storage.foldername(name))[1] = auth.uid()"
+ * Retourne le chemin de stockage (ex: "abc-123/1234567890_photo.jpg").
  */
-export async function uploadAvatar(file) {
+export async function uploadAvatar(file, userId) {
+  if (!userId) throw new Error('userId requis pour uploader un avatar')
+
   const safeName = sanitizeFileName(file.name)
   const fileName = `${Date.now()}_${safeName}`
-  const path = `uploads/${fileName}`
+  const path = `${userId}/${fileName}`
 
   const { data, error } = await supabase.storage
     .from('avatars')

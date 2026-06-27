@@ -1,36 +1,16 @@
 import React from 'react'
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+// MODIFIÉ — suppression de useSearchParams (plus utilisé ici)
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
 /**
  * Barre de navigation principale.
- * La barre de recherche est synchronisée avec le paramètre URL ?q=
- * via useSearchParams, ce qui la connecte directement à Home.jsx.
+ * MODIFIÉ — La barre de recherche a été déplacée dans Home.jsx uniquement.
+ * La Navbar ne gère plus aucun état de recherche.
  */
 export default function Navbar() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
-  const [searchParams, setSearchParams] = useSearchParams()
-
-  const q = searchParams.get('q') || ''
-
-  function handleSearch(e) {
-    const value = e.target.value
-    // Met à jour ?q= dans l'URL ; supprime le paramètre si vide
-    setSearchParams(prev => {
-      const next = new URLSearchParams(prev)
-      if (value) {
-        next.set('q', value)
-      } else {
-        next.delete('q')
-      }
-      return next
-    })
-    // Redirige vers l'accueil si on n'y est pas déjà
-    if (window.location.pathname !== '/') {
-      navigate(`/?q=${encodeURIComponent(value)}`)
-    }
-  }
 
   async function handleLogout() {
     await logout()
@@ -40,18 +20,16 @@ export default function Navbar() {
   return (
     <header className="bg-white border-b">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <Link to="/" className="text-xl font-bold text-brand-700">LeBonCoin Lite</Link>
-          <div className="hidden md:block">
-            <input
-              id="navbar-search"
-              value={q}
-              onChange={handleSearch}
-              placeholder="Rechercher des annonces..."
-              className="border rounded-md px-3 py-2 w-80 focus:outline-none focus:ring-2 focus:ring-brand-400"
-            />
-          </div>
-        </div>
+
+        {/* MODIFIÉ — Branding "LeBonCoin Lite" remplacé par "DzMarket" + slogan */}
+        <Link to="/" className="flex flex-col leading-tight">
+          <span className="text-xl font-bold text-brand-700">DzMarket</span>
+          <span className="text-xs text-slate-400 font-medium tracking-wide">
+            Le marché algérien, en ligne.
+          </span>
+        </Link>
+
+        {/* MODIFIÉ — Bloc <input> de recherche entièrement supprimé */}
 
         <nav className="flex items-center space-x-4">
           <Link to="/" className="text-sm text-slate-700">Accueil</Link>
@@ -60,7 +38,10 @@ export default function Navbar() {
           {user ? (
             <>
               <Link to="/profile" className="text-sm text-slate-700">Mon profil</Link>
-              <button onClick={handleLogout} className="text-sm text-slate-500 hover:text-red-500 transition-colors">
+              <button
+                onClick={handleLogout}
+                className="text-sm text-slate-500 hover:text-red-500 transition-colors"
+              >
                 Se déconnecter
               </button>
             </>
