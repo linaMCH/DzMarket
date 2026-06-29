@@ -23,10 +23,33 @@ It covers the full product loop: post an ad, upload photos, search by category a
 
 ---
 
+## 🎬 Démonstration
+
+### 🔎 Browse by category
+Quickly filter listings and discover products that match your interests.
+
+![Browse by category](asset/demo1.gif)
+
+### 📝 Create a new listing
+Publish a product with photos, price, and location in a few simple steps.
+
+![Create a new listing](asset/demo2.gif)
+
+### 💬 Start a conversation
+Chat directly with sellers from the product detail page.
+
+![Start a conversation](asset/demo3.gif)
+
+### 👤 Manage your profile
+Update your avatar and keep your account information up to date.
+
+![Manage your profile](asset/demo4.gif)
+
+---
+
 ## Demo
 
 ![Demo](./public/demo.gif)
-
 
 ---
 
