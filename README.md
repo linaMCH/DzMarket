@@ -47,12 +47,6 @@ Update your avatar and keep your account information up to date.
 
 ---
 
-## Demo
-
-![Demo](./public/demo.gif)
-
----
-
 ## Features
 
 ### Authentication
